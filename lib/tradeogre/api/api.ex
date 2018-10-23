@@ -7,8 +7,8 @@ defmodule Tradeogre.API do
     def process_url(url), do: Config.base_url <> url
     def process_response_body(body), do: body |> Poison.decode!
 
-    def list_markets do
-      get("/markets", [])
-    end
+    def list_markets, do: "/markets" |> get
+    def order_book(market), do: "/orders/#{market}" |> get
+    def trade_history(market), do: "/history/#{market}" |> get
   end
 end

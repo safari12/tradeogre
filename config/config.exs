@@ -30,4 +30,4 @@ use Mix.Config
 #     import_config "#{Mix.env}.exs"
 
 config :tradeogre, :api,
-base_url: "hello"
+base_url: "https://tradeogre.com/api/v1"

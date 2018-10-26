@@ -1,14 +1,17 @@
 defmodule Tradeogre.API.Response do
 
-  alias CryptoExchange.{Pair, Ticker}
+  alias CryptoExchange.{Pair, Ticker, Order}
 
-  def map_tickers(response) do
-    response
-    |> Map.get(:body)
+  def map_tickers({:ok, %{body: body}}) do
+    body
     |> Enum.reduce(%{}, fn x, acc ->
       r = Enum.reduce(x, %{}, &update_ticker_map/2)
       Map.merge(acc, r)
     end)
+  end
+
+  def map_order_book({:ok, %{body: body}}) do
+    body |> json_to_order_book
   end
 
   @spec update_ticker_map(Map.t, Map.t) :: Map.t
@@ -18,6 +21,28 @@ defmodule Tradeogre.API.Response do
     Map.put(acc, pair, ticker)
   end
 
+  @spec json_to_order_book(Map.t) :: Order.Book.t
+  defp json_to_order_book(%{"buy" => json_bids, "sell" => json_asks}) do
+    bids = json_bids
+    |> Enum.map(&json_to_order/1)
+    |> Enum.sort(&(&1.price >= &2.price))
+
+    asks = json_asks
+    |> Enum.map(&json_to_order/1)
+    |> Enum.sort(&(&1.price <= &2.price))
+
+    %Order.Book{
+      bids: bids,
+      asks: asks
+    }
+  end
+
+  defp json_to_order({price, quantity}) do
+    %Order{
+      price: price |> String.to_float,
+      quantity: quantity |> String.to_float
+    }
+  end
   @spec json_to_ticker(Map.t) :: Ticker.t
   defp json_to_ticker(json) do
     price = json["price"] |> String.to_float

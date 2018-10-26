@@ -10,5 +10,6 @@ defmodule Tradeogre.API do
     def list_markets, do: "/markets" |> get
     def order_book(market), do: "/orders/#{market}" |> get
     def trade_history(market), do: "/history/#{market}" |> get
+    def ticker(market), do: "/ticker/#{market}" |> get
   end
 end

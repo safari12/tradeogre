@@ -2,7 +2,7 @@ defmodule Tradeogre.API.Response do
 
   alias CryptoExchange.{Pair, Ticker, Order}
 
-  def map_tickers({:ok, %{body: body}}) do
+  def format_tickers_map({:ok, %{body: body}}) do
     body
     |> Enum.reduce(%{}, fn x, acc ->
       r = Enum.reduce(x, %{}, &update_ticker_map/2)
@@ -10,7 +10,11 @@ defmodule Tradeogre.API.Response do
     end)
   end
 
-  def map_order_book({:ok, %{body: body}}) do
+  def format_ticker({:ok, %{body: body}}) do
+    body |> json_to_ticker
+  end
+
+  def format_order_book({:ok, %{body: body}}) do
     body |> json_to_order_book
   end
 
@@ -43,6 +47,7 @@ defmodule Tradeogre.API.Response do
       quantity: quantity |> String.to_float
     }
   end
+
   @spec json_to_ticker(Map.t) :: Ticker.t
   defp json_to_ticker(json) do
     price = json["price"] |> String.to_float

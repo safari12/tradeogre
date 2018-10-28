@@ -1,11 +1,13 @@
 defmodule Tradeogre.API do
   defmodule Public do
-    use HTTPoison.Base
+    use Tesla
 
     alias Tradeogre.API.Config
 
-    def process_url(url), do: Config.base_url <> url
-    def process_response_body(body), do: body |> Poison.decode!
+    plug Tesla.Middleware.BaseUrl, Config.base_url()
+    plug Tesla.Middleware.JSON, decode_content_types: [
+      "text/html"
+    ]
 
     def list_markets, do: "/markets" |> get
     def order_book(market), do: "/orders/#{market}" |> get

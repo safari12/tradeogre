@@ -17,7 +17,6 @@ defmodule Tradeogre.API.PrivateTest do
 
   @encoded_sample_order @sample_order |> Jason.encode!
 
-
   setup do
     mock fn
       %{method: :post, url: @submit_buy_order_url, body: @encoded_sample_order} ->
